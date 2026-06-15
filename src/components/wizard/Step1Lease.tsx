@@ -3,17 +3,32 @@ import { useWizard } from '@/context/WizardContext';
 import { fetchBuildings, fetchUnitByBuilding } from '@/data/supabase/units';
 import type { BuildingConfig } from '@/types';
 import FormField from '@/components/ui/FormField';
-import { Search } from 'lucide-react';
+import { Search, Building2, PenLine } from 'lucide-react';
 
 export default function Step1Lease() {
-  const { answers, updateAnswer, building, setBuilding, setLandlordId, setRentRollId } = useWizard();
+  const {
+    answers, updateAnswer, mode, setMode,
+    building, setBuilding, setLandlordId, setRentRollId,
+  } = useWizard();
   const [buildings, setBuildings] = useState<BuildingConfig[]>([]);
   const [unitInput, setUnitInput] = useState(answers['Apt#']);
   const [lookupStatus, setLookupStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBuildings().then(setBuildings).catch(() => {});
-  }, []);
+    if (mode === 'existing') {
+      fetchBuildings().then(setBuildings).catch(() => {});
+    }
+  }, [mode]);
+
+  function handleModeSwitch(m: 'existing' | 'manual') {
+    setMode(m);
+    if (m === 'manual') {
+      setBuilding(null);
+      setLandlordId(null);
+      setRentRollId(null);
+    }
+    setLookupStatus(null);
+  }
 
   async function handleBuildingSelect(id: string) {
     const b = buildings.find((x) => x.id === id) ?? null;
@@ -60,46 +75,83 @@ export default function Step1Lease() {
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-slate-900">Step 1: Lease & Property</h2>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-        <p className="text-sm font-medium text-blue-800">Autofill from Building & Unit</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Building</label>
-            <select
-              value={building?.id ?? ''}
-              onChange={(e) => handleBuildingSelect(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select building...</option>
-              {buildings.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.display_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Unit</label>
-            <div className="flex gap-2">
-              <input
-                value={unitInput}
-                onChange={(e) => setUnitInput(e.target.value)}
-                placeholder="e.g. 4A"
-                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={handleUnitLookup}
-                disabled={!building}
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-40 transition-colors"
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => handleModeSwitch('existing')}
+          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
+            mode === 'existing'
+              ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
+              : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+          }`}
+        >
+          <Building2 className="w-4 h-4" />
+          Existing Building
+        </button>
+        <button
+          type="button"
+          onClick={() => handleModeSwitch('manual')}
+          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
+            mode === 'manual'
+              ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
+              : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+          }`}
+        >
+          <PenLine className="w-4 h-4" />
+          Manual / One-off
+        </button>
+      </div>
+
+      {mode === 'existing' && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+          <p className="text-sm font-medium text-blue-800">Autofill from Building & Unit</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Building</label>
+              <select
+                value={building?.id ?? ''}
+                onChange={(e) => handleBuildingSelect(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <Search className="w-4 h-4" />
-              </button>
+                <option value="">Select building...</option>
+                {buildings.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.display_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Unit</label>
+              <div className="flex gap-2">
+                <input
+                  value={unitInput}
+                  onChange={(e) => setUnitInput(e.target.value)}
+                  placeholder="e.g. 4A"
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={handleUnitLookup}
+                  disabled={!building}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-40 transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
+          {lookupStatus && <p className="text-xs text-blue-700">{lookupStatus}</p>}
         </div>
-        {lookupStatus && <p className="text-xs text-blue-700">{lookupStatus}</p>}
-      </div>
+      )}
+
+      {mode === 'manual' && (
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <p className="text-sm text-slate-600">
+            Enter all property details manually. No building or rent roll lookup required.
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <FormField
@@ -132,6 +184,7 @@ export default function Step1Lease() {
           label="Address"
           value={answers.Address}
           onChange={(v) => updateAnswer('Address', v)}
+          placeholder={mode === 'manual' ? 'Full address (street, city, state, zip)' : undefined}
         />
         <FormField
           label="Apt #"

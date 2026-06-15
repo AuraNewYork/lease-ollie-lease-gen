@@ -16,17 +16,16 @@ export default function Step4Riders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const effectiveLandlordId = landlordId || user?.landlord_id;
+  const effectiveLandlordId = landlordId || user?.landlord_id || null;
 
   useEffect(() => {
-    if (!effectiveLandlordId) return;
     loadData();
   }, [effectiveLandlordId, leaseId]);
 
   async function loadData() {
     setLoading(true);
     try {
-      const r = await fetchRiders(effectiveLandlordId!);
+      const r = await fetchRiders(effectiveLandlordId);
       setRiders(r);
       if (leaseId) {
         const l = await fetchLeaseRiderLinks(leaseId);
@@ -40,7 +39,7 @@ export default function Step4Riders() {
   }
 
   async function handleCreate() {
-    if (!newName.trim() || !user || !effectiveLandlordId) return;
+    if (!newName.trim() || !user) return;
     try {
       await createRider({
         landlord_id: effectiveLandlordId,
@@ -91,20 +90,13 @@ export default function Step4Riders() {
     return links.some((l) => l.custom_rider_id === riderId);
   }
 
-  if (!effectiveLandlordId) {
-    return (
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Step 4: Custom Riders</h2>
-        <p className="text-sm text-slate-500">Select a building first to load riders for that landlord.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-slate-900">Step 4: Custom Riders</h2>
       <p className="text-sm text-slate-500">
-        Manage custom riders for this landlord. Attach riders to include them with this lease.
+        {effectiveLandlordId
+          ? 'Manage custom riders for this landlord. Attach riders to include them with this lease.'
+          : 'Manage general-purpose riders (no landlord linked). Attach riders to include them with this lease.'}
       </p>
 
       {error && (

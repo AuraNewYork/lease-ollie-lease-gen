@@ -1,20 +1,26 @@
 import { supabase } from './client';
 import type { CustomRider, LeaseRiderLink } from '@/types';
 
-export async function fetchRiders(landlordId: string): Promise<CustomRider[]> {
-  const { data, error } = await supabase
+export async function fetchRiders(landlordId: string | null): Promise<CustomRider[]> {
+  let query = supabase
     .from('custom_riders')
     .select('*')
-    .eq('landlord_id', landlordId)
     .eq('is_active', true)
     .order('name');
 
+  if (landlordId) {
+    query = query.or(`landlord_id.eq.${landlordId},landlord_id.is.null`);
+  } else {
+    query = query.is('landlord_id', null);
+  }
+
+  const { data, error } = await query;
   if (error) throw new Error(error.message);
   return (data ?? []) as CustomRider[];
 }
 
 export async function createRider(params: {
-  landlord_id: string;
+  landlord_id: string | null;
   name: string;
   body_html: string;
   created_by: string;

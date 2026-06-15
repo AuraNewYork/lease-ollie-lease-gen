@@ -75,7 +75,14 @@ export default function DashboardPage() {
             <tbody>
               {leases.map((lease) => (
                 <tr key={lease.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 text-slate-900">{lease.building || '—'}</td>
+                  <td className="px-4 py-3 text-slate-900">
+                    {lease.building || '—'}
+                    {!lease.rent_roll_id && (
+                      <span className="ml-2 inline-block px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500">
+                        One-off
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-slate-900">{lease.unit || '—'}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium capitalize ${STATUS_COLORS[lease.status] || ''}`}>

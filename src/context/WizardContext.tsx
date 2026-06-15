@@ -4,8 +4,11 @@ import { DEFAULT_ANSWERS, DEFAULT_FLAGS } from '@/types';
 import { createLease, updateLease } from '@/data/supabase/leases';
 import { useAuth } from './AuthContext';
 
+export type StartMode = 'existing' | 'manual';
+
 interface WizardState {
   step: number;
+  mode: StartMode;
   answers: LeaseAnswers;
   flags: LeaseFlags;
   leaseId: string | null;
@@ -14,6 +17,7 @@ interface WizardState {
   rentRollId: string | null;
   saving: boolean;
   setStep: (s: number) => void;
+  setMode: (m: StartMode) => void;
   setAnswers: (a: LeaseAnswers) => void;
   updateAnswer: (key: keyof LeaseAnswers, value: string) => void;
   setFlags: (f: LeaseFlags) => void;
@@ -31,6 +35,7 @@ const WizardContext = createContext<WizardState | null>(null);
 export function WizardProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
+  const [mode, setMode] = useState<StartMode>('existing');
   const [answers, setAnswers] = useState<LeaseAnswers>(DEFAULT_ANSWERS);
   const [flags, setFlags] = useState<LeaseFlags>(DEFAULT_FLAGS);
   const [leaseId, setLeaseId] = useState<string | null>(null);
@@ -55,7 +60,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         const doc = await createLease({
           created_by: user.id,
           landlord_id: landlordId,
-          building: building?.display_name ?? null,
+          building: answers.BuildingName || null,
           unit: answers['Apt#'] || null,
           rent_roll_id: rentRollId,
           answers,
@@ -66,7 +71,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
       } else {
         await updateLease(leaseId, {
           landlord_id: landlordId,
-          building: building?.display_name ?? null,
+          building: answers.BuildingName || null,
           unit: answers['Apt#'] || null,
           rent_roll_id: rentRollId,
           answers,
@@ -77,7 +82,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     } finally {
       setSaving(false);
     }
-  }, [user, leaseId, landlordId, building, answers, flags, rentRollId]);
+  }, [user, leaseId, landlordId, answers, flags, rentRollId]);
 
   const loadDraft = useCallback((doc: LeaseDocument) => {
     setLeaseId(doc.id);
@@ -85,11 +90,13 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     setFlags(doc.flags);
     setLandlordId(doc.landlord_id);
     setRentRollId(doc.rent_roll_id);
+    setMode(doc.rent_roll_id ? 'existing' : 'manual');
     setStep(1);
   }, []);
 
   const reset = useCallback(() => {
     setStep(1);
+    setMode('existing');
     setAnswers(DEFAULT_ANSWERS);
     setFlags(DEFAULT_FLAGS);
     setLeaseId(null);
@@ -102,6 +109,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     <WizardContext.Provider
       value={{
         step,
+        mode,
         answers,
         flags,
         leaseId,
@@ -110,6 +118,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         rentRollId,
         saving,
         setStep,
+        setMode,
         setAnswers,
         updateAnswer,
         setFlags,
