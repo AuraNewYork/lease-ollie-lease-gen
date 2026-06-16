@@ -7,16 +7,10 @@ import Step3Clauses from './Step3Clauses';
 import Step4Riders from './Step4Riders';
 import Step5Finalize from './Step5Finalize';
 import { ChevronLeft, ChevronRight, Loader as Loader2, Save } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
-
 const STEP_LABELS = ['Lease & Property', 'Participants', 'Clauses', 'Riders', 'Generate'];
 
 export default function WizardShell() {
   const { step, setStep, saving, saveProgress, setAnswers, setFlags } = useWizard();
-  const location = useLocation();
-  const isDevMode =
-    import.meta.env.DEV ||
-    new URLSearchParams(location.search).get('test') === '1';
 
   async function handleNext() {
     await saveProgress();
@@ -61,24 +55,22 @@ export default function WizardShell() {
           })}
         </ol>
 
-        {isDevMode && (
-          <div className="flex items-center gap-2 mt-3 justify-end">
-            <button
-              type="button"
-              onClick={() => { setAnswers(TEST_ANSWERS); setFlags(TEST_FLAGS); }}
-              className="px-2.5 py-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
-            >
-              🧪 Fill Test Data
-            </button>
-            <button
-              type="button"
-              onClick={() => { setAnswers(DEFAULT_ANSWERS); setFlags(DEFAULT_FLAGS); }}
-              className="px-2.5 py-1 text-xs font-medium text-slate-500 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-2 mt-3 justify-end">
+          <button
+            type="button"
+            onClick={() => { setAnswers(TEST_ANSWERS); setFlags(TEST_FLAGS); }}
+            className="px-2.5 py-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+          >
+            🧪 Fill Test Data
+          </button>
+          <button
+            type="button"
+            onClick={() => { setAnswers(DEFAULT_ANSWERS); setFlags(DEFAULT_FLAGS); }}
+            className="px-2.5 py-1 text-xs font-medium text-slate-500 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors"
+          >
+            Clear
+          </button>
+        </div>
       </nav>
 
       <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
