@@ -170,4 +170,28 @@ export const RIDER_CATALOG: Rider[] = [
       { kind: 'flag', key: 'fl_noRecords', label: 'Lessor has no records/reports', exclusiveGroup: 'fl_records' },
     ],
   },
+  {
+    id: 'energy',
+    label: 'Energy Efficiency Clause (Model Energy Aligned Clause)',
+    language: 'EN',
+    mandatory: false,
+    templateKey: 'rbn-energy-rider-tagged.docx',
+    questions: [],
+  },
+  {
+    id: 'ofac',
+    label: 'OFAC / Anti-Terrorism Certification (Exec. Order 13224)',
+    language: 'EN',
+    mandatory: false,
+    templateKey: 'rbn-terrorist-rider-tagged.docx',
+    questions: [],
+  },
+  {
+    id: 'deregulation',
+    label: 'Apartment Deregulation Notice (first tenant post-deregulation)',
+    language: 'EN',
+    mandatory: false,
+    templateKey: 'rbn-deregulation-rider-tagged.docx',
+    questions: [],
+  },
 ];
