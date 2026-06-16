@@ -1,4 +1,6 @@
 import { useWizard } from '@/context/WizardContext';
+import { DEFAULT_ANSWERS, DEFAULT_FLAGS } from '@/types';
+import { TEST_ANSWERS, TEST_FLAGS } from '@/devFixtures';
 import Step1Lease from './Step1Lease';
 import Step2Participants from './Step2Participants';
 import Step3Clauses from './Step3Clauses';
@@ -8,8 +10,12 @@ import { ChevronLeft, ChevronRight, Loader as Loader2, Save } from 'lucide-react
 
 const STEP_LABELS = ['Lease & Property', 'Participants', 'Clauses', 'Riders', 'Generate'];
 
+const isDevMode =
+  import.meta.env.DEV ||
+  new URLSearchParams(window.location.search).get('test') === '1';
+
 export default function WizardShell() {
-  const { step, setStep, saving, saveProgress } = useWizard();
+  const { step, setStep, saving, saveProgress, setAnswers, setFlags } = useWizard();
 
   async function handleNext() {
     await saveProgress();
@@ -26,7 +32,7 @@ export default function WizardShell() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <nav className="mb-8">
+      <nav className="mb-6">
         <ol className="flex items-center gap-1">
           {STEP_LABELS.map((label, i) => {
             const stepNum = i + 1;
@@ -53,6 +59,25 @@ export default function WizardShell() {
             );
           })}
         </ol>
+
+        {isDevMode && (
+          <div className="flex items-center gap-2 mt-3 justify-end">
+            <button
+              type="button"
+              onClick={() => { setAnswers(TEST_ANSWERS); setFlags(TEST_FLAGS); }}
+              className="px-2.5 py-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+            >
+              🧪 Fill Test Data
+            </button>
+            <button
+              type="button"
+              onClick={() => { setAnswers(DEFAULT_ANSWERS); setFlags(DEFAULT_FLAGS); }}
+              className="px-2.5 py-1 text-xs font-medium text-slate-500 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+        )}
       </nav>
 
       <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
