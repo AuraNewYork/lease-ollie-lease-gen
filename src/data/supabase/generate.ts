@@ -55,7 +55,7 @@ export async function getLeaseArtifactUrl(leaseId: string): Promise<string | nul
   if (error || !data || data.length === 0) return null;
 
   const { data: urlData } = await supabase.storage
-    .from('lease-artifacts')
+    .from('lease-gen-artifacts')
     .createSignedUrl(data[0].storage_path, 3600);
 
   return urlData?.signedUrl ?? null;
