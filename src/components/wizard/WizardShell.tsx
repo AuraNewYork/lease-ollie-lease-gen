@@ -7,15 +7,16 @@ import Step3Clauses from './Step3Clauses';
 import Step4Riders from './Step4Riders';
 import Step5Finalize from './Step5Finalize';
 import { ChevronLeft, ChevronRight, Loader as Loader2, Save } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const STEP_LABELS = ['Lease & Property', 'Participants', 'Clauses', 'Riders', 'Generate'];
 
-const isDevMode =
-  import.meta.env.DEV ||
-  new URLSearchParams(window.location.search).get('test') === '1';
-
 export default function WizardShell() {
   const { step, setStep, saving, saveProgress, setAnswers, setFlags } = useWizard();
+  const location = useLocation();
+  const isDevMode =
+    import.meta.env.DEV ||
+    new URLSearchParams(location.search).get('test') === '1';
 
   async function handleNext() {
     await saveProgress();
