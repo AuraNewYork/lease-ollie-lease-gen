@@ -35,6 +35,24 @@ export interface LeaseAnswers {
   ExtensionStartDate: string;
   ExtensionEndDate: string;
   ExtensionRent: string;
+  // Rider answers
+  selectedRiders: string;
+  wg_DeadlineDate: string;
+  wg_SignDate: string;
+  wg_NoticeDate: string;
+  TenantFirstName: string;
+  TenantLastName: string;
+  TenantMiddleInitial: string;
+  City: string;
+  State: string;
+  Zip: string;
+  TenantPhone: string;
+  bb_buildingEradicatedFloors: string;
+  bb_buildingNotEradicatedFloors: string;
+  bb_otherText: string;
+  bb_TenantSignDate: string;
+  bb_OwnerSignDate: string;
+  aller_SignDate: string;
 }
 
 export interface LeaseFlags {
@@ -52,6 +70,22 @@ export interface LeaseFlags {
   brokersRetained: boolean;
   ownerWork: boolean;
   memorandum: boolean;
+  // Rider flags
+  wg_childPresent: boolean;
+  wg_noChild: boolean;
+  wg_guardsInstalledAll: boolean;
+  wg_guardsNotInstalled: boolean;
+  wg_guardsNeedRepair: boolean;
+  wg_guardsNoRepair: boolean;
+  wg_wantGuardsAnyway: boolean;
+  wg_child5Present: boolean;
+  wg_haveGuardsNeedRepair: boolean;
+  bb_noHistory: boolean;
+  bb_buildingEradicated: boolean;
+  bb_buildingNotEradicated: boolean;
+  bb_aptEradicated: boolean;
+  bb_aptNotEradicated: boolean;
+  bb_other: boolean;
 }
 
 export const DEFAULT_ANSWERS: LeaseAnswers = {
@@ -91,6 +125,23 @@ export const DEFAULT_ANSWERS: LeaseAnswers = {
   ExtensionStartDate: '',
   ExtensionEndDate: '',
   ExtensionRent: '',
+  selectedRiders: '',
+  wg_DeadlineDate: '',
+  wg_SignDate: '',
+  wg_NoticeDate: '',
+  TenantFirstName: '',
+  TenantLastName: '',
+  TenantMiddleInitial: '',
+  City: '',
+  State: '',
+  Zip: '',
+  TenantPhone: '',
+  bb_buildingEradicatedFloors: '',
+  bb_buildingNotEradicatedFloors: '',
+  bb_otherText: '',
+  bb_TenantSignDate: '',
+  bb_OwnerSignDate: '',
+  aller_SignDate: '',
 };
 
 export const DEFAULT_FLAGS: LeaseFlags = {
@@ -108,4 +159,19 @@ export const DEFAULT_FLAGS: LeaseFlags = {
   brokersRetained: false,
   ownerWork: false,
   memorandum: false,
+  wg_childPresent: false,
+  wg_noChild: false,
+  wg_guardsInstalledAll: false,
+  wg_guardsNotInstalled: false,
+  wg_guardsNeedRepair: false,
+  wg_guardsNoRepair: false,
+  wg_wantGuardsAnyway: false,
+  wg_child5Present: false,
+  wg_haveGuardsNeedRepair: false,
+  bb_noHistory: false,
+  bb_buildingEradicated: false,
+  bb_buildingNotEradicated: false,
+  bb_aptEradicated: false,
+  bb_aptNotEradicated: false,
+  bb_other: false,
 };

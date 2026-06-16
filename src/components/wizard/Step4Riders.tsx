@@ -4,6 +4,7 @@ import { fetchRiders, createRider, deleteRider, fetchLeaseRiderLinks, attachRide
 import { useAuth } from '@/context/AuthContext';
 import type { CustomRider, LeaseRiderLink } from '@/types';
 import { Plus, Trash2, Link2, Unlink, ChevronDown, ChevronUp } from 'lucide-react';
+import PremadeRiders from './PremadeRiders';
 
 export default function Step4Riders() {
   const { user } = useAuth();
@@ -91,13 +92,23 @@ export default function Step4Riders() {
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-lg font-semibold text-slate-900">Step 4: Custom Riders</h2>
-      <p className="text-sm text-slate-500">
-        {effectiveLandlordId
-          ? 'Manage custom riders for this landlord. Attach riders to include them with this lease.'
-          : 'Manage general-purpose riders (no landlord linked). Attach riders to include them with this lease.'}
-      </p>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-lg font-semibold text-slate-900">Step 4: Riders</h2>
+        <p className="text-sm text-slate-500 mt-1">
+          Select premade NYC disclosure riders and fill in their details, then optionally attach custom riders.
+        </p>
+      </div>
+
+      <PremadeRiders />
+
+      <div className="border-t border-slate-200 pt-6 space-y-4">
+        <h3 className="text-base font-semibold text-slate-900">Custom Riders</h3>
+        <p className="text-sm text-slate-500">
+          {effectiveLandlordId
+            ? 'Manage custom riders for this landlord. Attach riders to include them with this lease.'
+            : 'Manage general-purpose riders (no landlord linked). Attach riders to include them with this lease.'}
+        </p>
 
       {error && (
         <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
@@ -191,6 +202,7 @@ export default function Step4Riders() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }
