@@ -1,11 +1,20 @@
 import { supabase } from './client';
 
+interface SkippedRider {
+  riderId: string;
+  reason: string;
+}
+
 interface GenerateResult {
   ok: boolean;
   downloadUrl?: string;
   storagePath?: string;
   error?: string;
+  attachedRiders?: string[];
+  skippedRiders?: SkippedRider[];
 }
+
+export type { GenerateResult, SkippedRider };
 
 export async function generateLease(leaseId: string): Promise<GenerateResult> {
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-lease`;
@@ -31,6 +40,8 @@ export async function generateLease(leaseId: string): Promise<GenerateResult> {
     ok: true,
     downloadUrl: json.downloadUrl,
     storagePath: json.storagePath,
+    attachedRiders: json.attachedRiders ?? [],
+    skippedRiders: json.skippedRiders ?? [],
   };
 }
 

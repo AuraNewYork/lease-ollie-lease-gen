@@ -1,27 +1,37 @@
 import { useState } from 'react';
 import { useWizard } from '@/context/WizardContext';
 import { generateLease } from '@/data/supabase/generate';
+import type { GenerateResult } from '@/data/supabase/generate';
 import { updateLease } from '@/data/supabase/leases';
 import { FileText, Download, Loader as Loader2, CircleAlert as AlertCircle, CircleCheck as CheckCircle2 } from 'lucide-react';
+
+const RIDER_LABELS: Record<string, string> = {
+  windowGuard:        'Window Guard Notice (English)',
+  leadWindowAnnual:   'Lead Paint / Window Falls Annual Notice (English)',
+  bedbug:             'Bedbug Infestation History',
+  allergen:           'Indoor Allergen Hazards Notice',
+  windowGuardES:      'Window Guard Notice (Spanish)',
+  leadWindowAnnualES: 'Lead Paint / Window Falls Annual Notice (Spanish)',
+};
 
 export default function Step5Finalize() {
   const { leaseId, answers, flags, saving } = useWizard();
   const [generating, setGenerating] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [result, setResult] = useState<GenerateResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleGenerate() {
     if (!leaseId) return;
     setGenerating(true);
     setError(null);
-    setDownloadUrl(null);
+    setResult(null);
     try {
       await updateLease(leaseId, { answers, flags });
-      const result = await generateLease(leaseId);
-      if (result.ok && result.downloadUrl) {
-        setDownloadUrl(result.downloadUrl);
+      const r = await generateLease(leaseId);
+      if (r.ok && r.downloadUrl) {
+        setResult(r);
       } else {
-        setError(result.error || 'Generation failed');
+        setError(r.error || 'Generation failed');
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Generation failed');
@@ -29,6 +39,10 @@ export default function Step5Finalize() {
       setGenerating(false);
     }
   }
+
+  const downloadUrl    = result?.downloadUrl    ?? null;
+  const attachedRiders = result?.attachedRiders ?? [];
+  const skippedRiders  = result?.skippedRiders  ?? [];
 
   return (
     <div className="space-y-6">
@@ -90,9 +104,40 @@ export default function Step5Finalize() {
       {downloadUrl ? (
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-            <CheckCircle2 className="w-5 h-5" />
+            <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
             <p className="text-sm font-medium">Lease generated successfully!</p>
           </div>
+
+          {attachedRiders.length > 0 && (
+            <div className="border border-slate-200 rounded-lg p-4">
+              <h3 className="text-sm font-semibold text-slate-700 mb-2">Riders included</h3>
+              <ul className="space-y-1.5">
+                {attachedRiders.map((id) => (
+                  <li key={id} className="flex items-center gap-2 text-sm text-slate-700">
+                    <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    {RIDER_LABELS[id] ?? id}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {skippedRiders.length > 0 && (
+            <div className="border border-amber-300 bg-amber-50 rounded-lg p-4">
+              <div className="flex items-start gap-2 mb-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <h3 className="text-sm font-semibold text-amber-800">Some selected riders were not attached:</h3>
+              </div>
+              <ul className="space-y-1 ml-6">
+                {skippedRiders.map(({ riderId, reason }) => (
+                  <li key={riderId} className="text-sm text-amber-800">
+                    <span className="font-medium">{RIDER_LABELS[riderId] ?? riderId}</span>
+                    <span className="text-amber-600"> — {reason}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <a
             href={downloadUrl}
