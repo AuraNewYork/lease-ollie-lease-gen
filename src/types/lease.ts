@@ -53,6 +53,7 @@ export interface LeaseAnswers {
   bb_TenantSignDate: string;
   bb_OwnerSignDate: string;
   aller_SignDate: string;
+  TenantCount: string;
 }
 
 export interface LeaseFlags {
@@ -70,6 +71,7 @@ export interface LeaseFlags {
   brokersRetained: boolean;
   ownerWork: boolean;
   memorandum: boolean;
+  guarantyIncluded: boolean;
   // Rider flags
   wg_childPresent: boolean;
   wg_noChild: boolean;
@@ -142,6 +144,7 @@ export const DEFAULT_ANSWERS: LeaseAnswers = {
   bb_TenantSignDate: '',
   bb_OwnerSignDate: '',
   aller_SignDate: '',
+  TenantCount: '',
 };
 
 export const DEFAULT_FLAGS: LeaseFlags = {
@@ -159,6 +162,7 @@ export const DEFAULT_FLAGS: LeaseFlags = {
   brokersRetained: false,
   ownerWork: false,
   memorandum: false,
+  guarantyIncluded: true,
   wg_childPresent: false,
   wg_noChild: false,
   wg_guardsInstalledAll: false,

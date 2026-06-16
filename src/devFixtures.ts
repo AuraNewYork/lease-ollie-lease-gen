@@ -55,6 +55,7 @@ export const TEST_ANSWERS: LeaseAnswers = {
   bb_TenantSignDate: '2026-06-16',
   bb_OwnerSignDate: '2026-06-16',
   aller_SignDate: '2026-06-16',
+  TenantCount: '2',
 };
 
 export const TEST_FLAGS: LeaseFlags = {
@@ -72,6 +73,7 @@ export const TEST_FLAGS: LeaseFlags = {
   brokersRetained: true,
   ownerWork: true,
   memorandum: true,
+  guarantyIncluded: true,
   // Rider flags
   wg_childPresent: true,
   wg_noChild: false,
