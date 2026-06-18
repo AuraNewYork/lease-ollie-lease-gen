@@ -12,6 +12,14 @@ const RIDER_LABELS: Record<string, string> = {
   allergen:           'Indoor Allergen Hazards Notice',
   windowGuardES:      'Window Guard Notice (Spanish)',
   leadWindowAnnualES: 'Lead Paint / Window Falls Annual Notice (Spanish)',
+  sprinkler:          'Sprinkler Disclosure (NYS §231-a)',
+  stoveKnob:          'Stove Knob Covers Annual Notice (NYC)',
+  smoking:            'Smoking Policy Disclosure (NYC)',
+  flood:              'Flood History & Risk Notice (NYS §231-b)',
+  federalLead:        'Federal Lead-Based Paint Disclosure',
+  energy:             'Energy Efficiency Clause',
+  ofac:               'OFAC / Anti-Terrorism Certification',
+  deregulation:       'Apartment Deregulation Notice',
 };
 
 export default function Step5Finalize() {
@@ -22,6 +30,19 @@ export default function Step5Finalize() {
 
   async function handleGenerate() {
     if (!leaseId) return;
+
+    const missing: string[] = [];
+    if (!answers.BuildingName.trim()) missing.push('Building');
+    if (!answers['Apt#'].trim()) missing.push('Apt #');
+    if (!answers.TenantName.trim()) missing.push('Tenant Name');
+    if (!answers.RentAmount.trim()) missing.push('Rent');
+    if (!answers.LeaseStartDate.trim()) missing.push('Start Date');
+    if (!answers.LeaseEndDate.trim()) missing.push('End Date');
+    if (missing.length > 0) {
+      setError(`Please fill in: ${missing.join(', ')}`);
+      return;
+    }
+
     setGenerating(true);
     setError(null);
     setResult(null);

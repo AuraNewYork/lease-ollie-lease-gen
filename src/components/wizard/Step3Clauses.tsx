@@ -5,29 +5,14 @@ import Toggle from '@/components/ui/Toggle';
 export default function Step3Clauses() {
   const { answers, updateAnswer, flags, toggleFlag } = useWizard();
 
-  const derivedTenantCount = answers.TenantCount ||
-    String(Math.min(6, Math.max(1, answers.TenantName.split(',').filter((s) => s.trim()).length || 1)));
-
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-slate-900">Step 3: Optional Clauses</h2>
       <p className="text-sm text-slate-500">Toggle clauses on/off. Fill in details for active clauses.</p>
 
       <div className="space-y-5">
-        <div className="p-4 bg-slate-50 rounded-lg space-y-4">
+        <div className="p-4 bg-slate-50 rounded-lg">
           <Toggle label="Include Guaranty" checked={flags.guarantyIncluded} onChange={() => toggleFlag('guarantyIncluded')} />
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Number of tenant signature lines</label>
-            <select
-              value={derivedTenantCount}
-              onChange={(e) => updateAnswer('TenantCount', e.target.value)}
-              className="w-32 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow bg-white"
-            >
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <option key={n} value={String(n)}>{n}</option>
-              ))}
-            </select>
-          </div>
         </div>
 
         <div className="space-y-3 p-4 bg-slate-50 rounded-lg">

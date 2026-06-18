@@ -1,7 +1,7 @@
 import type { LeaseAnswers, LeaseFlags } from '@/types';
 
 export const TEST_ANSWERS: LeaseAnswers = {
-  LeaseCreationDate: '2026-06-16',
+  LeaseCreationDate: new Date().toLocaleDateString('en-CA'),
   LeaseStartDate: '2026-07-01',
   LeaseEndDate: '2027-06-30',
   BuildingName: 'The Sky',
@@ -40,7 +40,7 @@ export const TEST_ANSWERS: LeaseAnswers = {
   // Rider answers
   selectedRiders: 'windowGuard,leadWindowAnnual,bedbug,allergen,windowGuardES',
   wg_DeadlineDate: '2026-07-15',
-  wg_SignDate: '2026-06-16',
+  wg_SignDate: '',
   wg_NoticeDate: '2026-06-16',
   TenantFirstName: 'Jane',
   TenantLastName: 'Doe',
@@ -52,9 +52,9 @@ export const TEST_ANSWERS: LeaseAnswers = {
   bb_buildingEradicatedFloors: '',
   bb_buildingNotEradicatedFloors: '',
   bb_otherText: '',
-  bb_TenantSignDate: '2026-06-16',
-  bb_OwnerSignDate: '2026-06-16',
-  aller_SignDate: '2026-06-16',
+  bb_TenantSignDate: '',
+  bb_OwnerSignDate: '',
+  aller_SignDate: '',
   TenantCount: '2',
 };
 

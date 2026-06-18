@@ -50,6 +50,12 @@ export default function PremadeRiders() {
 
   return (
     <div className="space-y-6">
+      {flags.builtBefore1978 && !selectedIds.includes('federalLead') && (
+        <div className="flex items-start gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-300 rounded-lg px-4 py-3">
+          <span>Pre-1978 building: the Federal Lead-Based Paint Disclosure is usually required. Select it under Optional Riders below.</span>
+        </div>
+      )}
+
       <div>
         <h3 className="text-sm font-semibold text-slate-700 mb-3">Required NYC Disclosures</h3>
         <div className="space-y-2">

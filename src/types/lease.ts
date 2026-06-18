@@ -91,7 +91,7 @@ export interface LeaseFlags {
 }
 
 export const DEFAULT_ANSWERS: LeaseAnswers = {
-  LeaseCreationDate: '',
+  LeaseCreationDate: new Date().toLocaleDateString('en-CA'),
   LeaseStartDate: '',
   LeaseEndDate: '',
   BuildingName: '',
