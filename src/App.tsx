@@ -4,6 +4,7 @@ import LoginPage from '@/pages/LoginPage';
 import DashboardPage from '@/pages/DashboardPage';
 import NewLeasePage from '@/pages/NewLeasePage';
 import ResumeLeasePage from '@/pages/ResumeLeasePage';
+import SignPage from '@/pages/SignPage';
 import AppLayout from '@/components/AppLayout';
 
 function ProtectedRoutes() {
@@ -25,7 +26,10 @@ function ProtectedRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <ProtectedRoutes />
+      <Routes>
+        <Route path="/sign/:token" element={<SignPage />} />
+        <Route path="*" element={<ProtectedRoutes />} />
+      </Routes>
     </AuthProvider>
   );
 }

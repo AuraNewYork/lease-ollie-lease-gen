@@ -56,6 +56,9 @@ export const TEST_ANSWERS: LeaseAnswers = {
   bb_OwnerSignDate: '',
   aller_SignDate: '',
   TenantCount: '2',
+  tenantEmails: '["jane.doe@example.com","john.roe@example.com"]',
+  GuarantorCount: '1',
+  guarantors: '[{"name":"Mary Guarantor","email":"mary@example.com"}]',
 };
 
 export const TEST_FLAGS: LeaseFlags = {
