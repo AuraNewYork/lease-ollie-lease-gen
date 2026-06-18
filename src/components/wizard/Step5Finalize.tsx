@@ -61,9 +61,11 @@ export default function Step5Finalize() {
     }
   }
 
-  const downloadUrl    = result?.downloadUrl    ?? null;
-  const attachedRiders = result?.attachedRiders ?? [];
-  const skippedRiders  = result?.skippedRiders  ?? [];
+  const downloadUrl          = result?.downloadUrl          ?? null;
+  const attachedRiders       = result?.attachedRiders       ?? [];
+  const skippedRiders        = result?.skippedRiders        ?? [];
+  const attachedCustomRiders = result?.attachedCustomRiders ?? [];
+  const skippedCustomRiders  = result?.skippedCustomRiders  ?? [];
 
   return (
     <div className="space-y-6">
@@ -153,6 +155,37 @@ export default function Step5Finalize() {
                 {skippedRiders.map(({ riderId, reason }) => (
                   <li key={riderId} className="text-sm text-amber-800">
                     <span className="font-medium">{RIDER_LABELS[riderId] ?? riderId}</span>
+                    <span className="text-amber-600"> — {reason}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {attachedCustomRiders.length > 0 && (
+            <div className="border border-slate-200 rounded-lg p-4">
+              <h3 className="text-sm font-semibold text-slate-700 mb-2">Custom riders included</h3>
+              <ul className="space-y-1.5">
+                {attachedCustomRiders.map((name) => (
+                  <li key={name} className="flex items-center gap-2 text-sm text-slate-700">
+                    <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {skippedCustomRiders.length > 0 && (
+            <div className="border border-amber-300 bg-amber-50 rounded-lg p-4">
+              <div className="flex items-start gap-2 mb-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <h3 className="text-sm font-semibold text-amber-800">Some custom riders were not attached:</h3>
+              </div>
+              <ul className="space-y-1 ml-6">
+                {skippedCustomRiders.map(({ name, reason }) => (
+                  <li key={name} className="text-sm text-amber-800">
+                    <span className="font-medium">{name}</span>
                     <span className="text-amber-600"> — {reason}</span>
                   </li>
                 ))}

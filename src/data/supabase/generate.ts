@@ -5,6 +5,11 @@ interface SkippedRider {
   reason: string;
 }
 
+interface SkippedCustomRider {
+  name: string;
+  reason: string;
+}
+
 interface GenerateResult {
   ok: boolean;
   downloadUrl?: string;
@@ -12,9 +17,11 @@ interface GenerateResult {
   error?: string;
   attachedRiders?: string[];
   skippedRiders?: SkippedRider[];
+  attachedCustomRiders?: string[];
+  skippedCustomRiders?: SkippedCustomRider[];
 }
 
-export type { GenerateResult, SkippedRider };
+export type { GenerateResult, SkippedRider, SkippedCustomRider };
 
 export async function generateLease(leaseId: string): Promise<GenerateResult> {
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-lease`;
@@ -42,6 +49,8 @@ export async function generateLease(leaseId: string): Promise<GenerateResult> {
     storagePath: json.storagePath,
     attachedRiders: json.attachedRiders ?? [],
     skippedRiders: json.skippedRiders ?? [],
+    attachedCustomRiders: json.attachedCustomRiders ?? [],
+    skippedCustomRiders: json.skippedCustomRiders ?? [],
   };
 }
 
