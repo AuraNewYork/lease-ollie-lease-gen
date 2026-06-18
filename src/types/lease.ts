@@ -54,6 +54,7 @@ export interface LeaseAnswers {
   bb_OwnerSignDate: string;
   aller_SignDate: string;
   TenantCount: string;
+  tenantList: string;
   tenantEmails: string;
   GuarantorCount: string;
   guarantors: string;
@@ -148,6 +149,7 @@ export const DEFAULT_ANSWERS: LeaseAnswers = {
   bb_OwnerSignDate: '',
   aller_SignDate: '',
   TenantCount: '',
+  tenantList: '[]',
   tenantEmails: '[]',
   GuarantorCount: '0',
   guarantors: '[]',

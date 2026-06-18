@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { useWizard } from '@/context/WizardContext';
 import FormField from '@/components/ui/FormField';
 
+interface TenantEntry {
+  first: string;
+  middle: string;
+  last: string;
+  phone: string;
+  email: string;
+}
+
 interface GuarantorEntry {
   name: string;
   email: string;
@@ -11,26 +19,35 @@ function parseJson<T>(s: string, fallback: T): T {
   try { return JSON.parse(s) as T; } catch { return fallback; }
 }
 
+function fullName(t: TenantEntry): string {
+  return [t.first, t.middle, t.last].filter(Boolean).join(' ');
+}
+
 export default function Step2Participants() {
   const { answers, updateAnswer, setAnswers } = useWizard();
 
-  // --- Tenant state ---
+  // --- Tenant count ---
   const storedCount = Math.min(6, Math.max(1, parseInt(answers.TenantCount || '1', 10) || 1));
-  const storedNames = answers.TenantName
-    ? answers.TenantName.split(',').map((s) => s.trim())
-    : [];
-  const storedTenantEmails: string[] = parseJson(answers.tenantEmails || '[]', []);
+
+  // --- Tenant list: try tenantList JSON first, fall back to old singular fields for tenant 1 ---
+  const storedList: TenantEntry[] = parseJson(answers.tenantList || '[]', []);
+  const storedEmails: string[] = parseJson(answers.tenantEmails || '[]', []);
 
   const [tenantCount, setTenantCount] = useState(storedCount);
-  const [tenantNames, setTenantNames] = useState<string[]>(() => {
-    const arr: string[] = [];
-    for (let i = 0; i < storedCount; i++) arr.push(storedNames[i] ?? '');
-    return arr;
-  });
-  const [tenantEmails, setTenantEmails] = useState<string[]>(() => {
-    const arr: string[] = [];
+  const [tenantList, setTenantList] = useState<TenantEntry[]>(() => {
+    const arr: TenantEntry[] = [];
     for (let i = 0; i < storedCount; i++) {
-      arr.push(storedTenantEmails[i] ?? (i === 0 ? (answers.TenantEmail || '') : ''));
+      if (storedList[i]) {
+        arr.push(storedList[i]);
+      } else {
+        arr.push({
+          first:  i === 0 ? (answers.TenantFirstName     || '') : '',
+          middle: i === 0 ? (answers.TenantMiddleInitial || '') : '',
+          last:   i === 0 ? (answers.TenantLastName      || '') : '',
+          phone:  i === 0 ? (answers.TenantPhone         || '') : '',
+          email:  storedEmails[i] ?? (i === 0 ? (answers.TenantEmail || '') : ''),
+        });
+      }
     }
     return arr;
   });
@@ -50,63 +67,61 @@ export default function Step2Participants() {
 
   // Sync all participant state to wizard answers
   function syncAll(
-    names: string[],
-    emails: string[],
+    list: TenantEntry[],
     gCount: number,
     gEntries: GuarantorEntry[],
   ) {
+    const t0 = list[0] ?? { first: '', middle: '', last: '', phone: '', email: '' };
     setAnswers({
       ...answers,
-      TenantName: names.filter((s) => s.trim()).join(', '),
-      TenantCount: String(names.length),
-      TenantEmail: emails[0] ?? '',
-      tenantEmails: JSON.stringify(emails),
+      // Backward-compat comma-joined full name
+      TenantName: list.map(fullName).filter(Boolean).join(', '),
+      TenantCount: String(list.length),
+      // Singular keys for tenant 1 (engine fallback)
+      TenantEmail:        t0.email,
+      TenantFirstName:    t0.first,
+      TenantMiddleInitial: t0.middle,
+      TenantLastName:     t0.last,
+      TenantPhone:        t0.phone,
+      // Structured per-tenant data
+      tenantList:   JSON.stringify(list),
+      tenantEmails: JSON.stringify(list.map((t) => t.email)),
+      // Guarantors
       GuarantorCount: String(gCount),
-      guarantors: JSON.stringify(gEntries.slice(0, gCount)),
+      guarantors:     JSON.stringify(gEntries.slice(0, gCount)),
     });
   }
 
   function handleTenantCountChange(n: number) {
-    const newNames = [...tenantNames];
-    while (newNames.length < n) newNames.push('');
-    newNames.length = n;
-    const newEmails = [...tenantEmails];
-    while (newEmails.length < n) newEmails.push('');
-    newEmails.length = n;
+    const updated = [...tenantList];
+    while (updated.length < n) {
+      updated.push({ first: '', middle: '', last: '', phone: '', email: '' });
+    }
+    updated.length = n;
     setTenantCount(n);
-    setTenantNames(newNames);
-    setTenantEmails(newEmails);
-    syncAll(newNames, newEmails, guarantorCount, guarantorEntries);
+    setTenantList(updated);
+    syncAll(updated, guarantorCount, guarantorEntries);
   }
 
-  function handleTenantNameChange(i: number, value: string) {
-    const newNames = [...tenantNames];
-    newNames[i] = value;
-    setTenantNames(newNames);
-    syncAll(newNames, tenantEmails, guarantorCount, guarantorEntries);
-  }
-
-  function handleTenantEmailChange(i: number, value: string) {
-    const newEmails = [...tenantEmails];
-    newEmails[i] = value;
-    setTenantEmails(newEmails);
-    syncAll(tenantNames, newEmails, guarantorCount, guarantorEntries);
+  function handleTenantFieldChange(i: number, field: keyof TenantEntry, value: string) {
+    const updated = tenantList.map((t, idx) => idx === i ? { ...t, [field]: value } : t);
+    setTenantList(updated);
+    syncAll(updated, guarantorCount, guarantorEntries);
   }
 
   function handleGuarantorCountChange(n: number) {
-    const newEntries = [...guarantorEntries];
-    while (newEntries.length < n) newEntries.push({ name: '', email: '' });
-    newEntries.length = n;
+    const updated = [...guarantorEntries];
+    while (updated.length < n) updated.push({ name: '', email: '' });
+    updated.length = n;
     setGuarantorCount(n);
-    setGuarantorEntries(newEntries);
-    syncAll(tenantNames, tenantEmails, n, newEntries);
+    setGuarantorEntries(updated);
+    syncAll(tenantList, n, updated);
   }
 
   function handleGuarantorChange(i: number, field: keyof GuarantorEntry, value: string) {
-    const newEntries = [...guarantorEntries];
-    newEntries[i] = { ...newEntries[i], [field]: value };
-    setGuarantorEntries(newEntries);
-    syncAll(tenantNames, tenantEmails, guarantorCount, newEntries);
+    const updated = guarantorEntries.map((g, idx) => idx === i ? { ...g, [field]: value } : g);
+    setGuarantorEntries(updated);
+    syncAll(tenantList, guarantorCount, updated);
   }
 
   return (
@@ -140,20 +155,45 @@ export default function Step2Participants() {
           </select>
         </div>
 
-        {tenantNames.map((name, i) => (
-          <div key={i} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField
-              label={tenantCount === 1 ? 'Tenant Name' : `Tenant ${i + 1} Name`}
-              value={name}
-              onChange={(v) => handleTenantNameChange(i, v)}
-              placeholder="Full name (avoid commas)"
-            />
-            <FormField
-              label={tenantCount === 1 ? 'Tenant Email' : `Tenant ${i + 1} Email`}
-              value={tenantEmails[i] ?? ''}
-              onChange={(v) => handleTenantEmailChange(i, v)}
-              placeholder="email@example.com"
-            />
+        {tenantList.map((t, i) => (
+          <div key={i} className="space-y-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              {tenantCount === 1 ? 'Tenant' : `Tenant ${i + 1}`}
+            </p>
+            <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
+              <FormField
+                label="First Name"
+                value={t.first}
+                onChange={(v) => handleTenantFieldChange(i, 'first', v)}
+                placeholder="Jane"
+              />
+              <FormField
+                label="Middle Initial"
+                value={t.middle}
+                onChange={(v) => handleTenantFieldChange(i, 'middle', v)}
+                placeholder="M"
+              />
+              <FormField
+                label="Last Name"
+                value={t.last}
+                onChange={(v) => handleTenantFieldChange(i, 'last', v)}
+                placeholder="Doe"
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <FormField
+                label="Phone"
+                value={t.phone}
+                onChange={(v) => handleTenantFieldChange(i, 'phone', v)}
+                placeholder="212-555-0000"
+              />
+              <FormField
+                label="Email"
+                value={t.email}
+                onChange={(v) => handleTenantFieldChange(i, 'email', v)}
+                placeholder="email@example.com"
+              />
+            </div>
           </div>
         ))}
 
