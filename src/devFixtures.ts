@@ -59,7 +59,7 @@ export const TEST_ANSWERS: LeaseAnswers = {
   tenantList: '[{"first":"Jane","middle":"M","last":"Doe","phone":"212-555-0199","email":"jane.doe@example.com"},{"first":"John","middle":"","last":"Roe","phone":"212-555-0200","email":"john.roe@example.com"}]',
   tenantEmails: '["jane.doe@example.com","john.roe@example.com"]',
   GuarantorCount: '1',
-  guarantors: '[{"name":"Mary Guarantor","email":"mary@example.com"}]',
+  guarantors: '[{"GuarantorName":"Mary Guarantor","GuarantorAddress":"10 Guarantor Ln, New York, NY 10001","name":"Mary Guarantor","email":""}]',
 };
 
 export const TEST_FLAGS: LeaseFlags = {

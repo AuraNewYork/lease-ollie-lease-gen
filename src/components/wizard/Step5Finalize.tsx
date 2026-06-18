@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useWizard } from '@/context/WizardContext';
 import { generateLease } from '@/data/supabase/generate';
 import type { GenerateResult } from '@/data/supabase/generate';
@@ -11,7 +12,7 @@ import SignaturePad, { type SignaturePadHandle } from '@/components/SignaturePad
 import {
   FileText, Download, Loader as Loader2,
   CircleAlert as AlertCircle, CircleCheck as CheckCircle2,
-  Copy, RefreshCw, PenLine,
+  Copy, RefreshCw, PenLine, ArrowLeft,
 } from 'lucide-react';
 
 const RIDER_LABELS: Record<string, string> = {
@@ -231,6 +232,13 @@ export default function Step5Finalize() {
             <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
             <p className="text-sm font-medium">Lease generated successfully!</p>
           </div>
+
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Leases
+          </Link>
 
           {attachedRiders.length > 0 && (
             <div className="border border-slate-200 rounded-lg p-4">

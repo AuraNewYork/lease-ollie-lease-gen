@@ -11,8 +11,8 @@ interface TenantEntry {
 }
 
 interface GuarantorEntry {
-  name: string;
-  email: string;
+  GuarantorName: string;
+  GuarantorAddress: string;
 }
 
 function parseJson<T>(s: string, fallback: T): T {
@@ -29,7 +29,6 @@ export default function Step2Participants() {
   // --- Tenant count ---
   const storedCount = Math.min(6, Math.max(1, parseInt(answers.TenantCount || '1', 10) || 1));
 
-  // --- Tenant list: try tenantList JSON first, fall back to old singular fields for tenant 1 ---
   const storedList: TenantEntry[] = parseJson(answers.tenantList || '[]', []);
   const storedEmails: string[] = parseJson(answers.tenantEmails || '[]', []);
 
@@ -54,18 +53,21 @@ export default function Step2Participants() {
 
   // --- Guarantor state ---
   const storedGCount = Math.min(6, Math.max(0, parseInt(answers.GuarantorCount || '0', 10) || 0));
-  const storedGuarantors: GuarantorEntry[] = parseJson(answers.guarantors || '[]', []);
+  const rawGuarantors: Record<string, string>[] = parseJson(answers.guarantors || '[]', []);
+  const storedGuarantors: GuarantorEntry[] = rawGuarantors.map((g) => ({
+    GuarantorName:    g.GuarantorName    || g.name || '',
+    GuarantorAddress: g.GuarantorAddress || '',
+  }));
 
   const [guarantorCount, setGuarantorCount] = useState(storedGCount);
   const [guarantorEntries, setGuarantorEntries] = useState<GuarantorEntry[]>(() => {
     const arr: GuarantorEntry[] = [];
     for (let i = 0; i < storedGCount; i++) {
-      arr.push(storedGuarantors[i] ?? { name: '', email: '' });
+      arr.push(storedGuarantors[i] ?? { GuarantorName: '', GuarantorAddress: '' });
     }
     return arr;
   });
 
-  // Sync all participant state to wizard answers
   function syncAll(
     list: TenantEntry[],
     gCount: number,
@@ -74,29 +76,31 @@ export default function Step2Participants() {
     const t0 = list[0] ?? { first: '', middle: '', last: '', phone: '', email: '' };
     setAnswers({
       ...answers,
-      // Backward-compat comma-joined full name
-      TenantName: list.map(fullName).filter(Boolean).join(', '),
-      TenantCount: String(list.length),
-      // Singular keys for tenant 1 (engine fallback)
-      TenantEmail:        t0.email,
-      TenantFirstName:    t0.first,
+      TenantName:          list.map(fullName).filter(Boolean).join(', '),
+      TenantCount:         String(list.length),
+      TenantEmail:         t0.email,
+      TenantFirstName:     t0.first,
       TenantMiddleInitial: t0.middle,
-      TenantLastName:     t0.last,
-      TenantPhone:        t0.phone,
-      // Structured per-tenant data
-      tenantList:   JSON.stringify(list),
-      tenantEmails: JSON.stringify(list.map((t) => t.email)),
-      // Guarantors
-      GuarantorCount: String(gCount),
-      guarantors:     JSON.stringify(gEntries.slice(0, gCount)),
+      TenantLastName:      t0.last,
+      TenantPhone:         t0.phone,
+      tenantList:          JSON.stringify(list),
+      tenantEmails:        JSON.stringify(list.map((t) => t.email)),
+      GuarantorCount:      String(gCount),
+      // Include `name` key so the lease-signing engine can display guarantor names
+      guarantors: JSON.stringify(
+        gEntries.slice(0, gCount).map((g) => ({
+          GuarantorName:    g.GuarantorName,
+          GuarantorAddress: g.GuarantorAddress,
+          name:             g.GuarantorName,
+          email:            '',
+        }))
+      ),
     });
   }
 
   function handleTenantCountChange(n: number) {
     const updated = [...tenantList];
-    while (updated.length < n) {
-      updated.push({ first: '', middle: '', last: '', phone: '', email: '' });
-    }
+    while (updated.length < n) updated.push({ first: '', middle: '', last: '', phone: '', email: '' });
     updated.length = n;
     setTenantCount(n);
     setTenantList(updated);
@@ -111,7 +115,7 @@ export default function Step2Participants() {
 
   function handleGuarantorCountChange(n: number) {
     const updated = [...guarantorEntries];
-    while (updated.length < n) updated.push({ name: '', email: '' });
+    while (updated.length < n) updated.push({ GuarantorName: '', GuarantorAddress: '' });
     updated.length = n;
     setGuarantorCount(n);
     setGuarantorEntries(updated);
@@ -160,7 +164,7 @@ export default function Step2Participants() {
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               {tenantCount === 1 ? 'Tenant' : `Tenant ${i + 1}`}
             </p>
-            <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <FormField
                 label="First Name"
                 value={t.first}
@@ -231,15 +235,15 @@ export default function Step2Participants() {
           <div key={i} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               label={`Guarantor ${i + 1} Name`}
-              value={g.name}
-              onChange={(v) => handleGuarantorChange(i, 'name', v)}
-              placeholder="Full name"
+              value={g.GuarantorName}
+              onChange={(v) => handleGuarantorChange(i, 'GuarantorName', v)}
+              placeholder="Full legal name"
             />
             <FormField
-              label={`Guarantor ${i + 1} Email`}
-              value={g.email}
-              onChange={(v) => handleGuarantorChange(i, 'email', v)}
-              placeholder="email@example.com"
+              label={`Guarantor ${i + 1} Address`}
+              value={g.GuarantorAddress}
+              onChange={(v) => handleGuarantorChange(i, 'GuarantorAddress', v)}
+              placeholder="Full mailing address"
             />
           </div>
         ))}
