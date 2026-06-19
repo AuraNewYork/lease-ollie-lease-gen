@@ -48,13 +48,6 @@ export const RIDER_CATALOG: Rider[] = [
       { kind: 'answer', key: 'wg_NoticeDate', label: 'Notice issue date', type: 'date', prefill: 'creationDate' },
       { kind: 'answer', key: 'wg_DeadlineDate', label: 'Return deadline', type: 'date' },
       { kind: 'answer', key: 'wg_SignDate', label: 'Tenant sign date (stub)', type: 'date' },
-      { kind: 'answer', key: 'TenantFirstName', label: 'Tenant first name', type: 'text' },
-      { kind: 'answer', key: 'TenantLastName', label: 'Tenant last name', type: 'text' },
-      { kind: 'answer', key: 'TenantMiddleInitial', label: 'Tenant middle initial', type: 'text' },
-      { kind: 'answer', key: 'City', label: 'Apartment city', type: 'text' },
-      { kind: 'answer', key: 'State', label: 'Apartment state', type: 'text' },
-      { kind: 'answer', key: 'Zip', label: 'Apartment ZIP', type: 'text' },
-      { kind: 'answer', key: 'TenantPhone', label: 'Tenant phone', type: 'text' },
     ],
   },
   {

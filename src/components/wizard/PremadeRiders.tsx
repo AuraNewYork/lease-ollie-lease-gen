@@ -168,6 +168,27 @@ export default function PremadeRiders() {
 
 // ─── Required-field warning computation ───────────────────────────────────────
 
+const OPTIONAL_ANSWER_KEYS = new Set(['wg_DeadlineDate', 'knob_returnByDate']);
+
+// Keys that are only required when their trigger flag is true.
+const TRIGGER_REQUIRED: Record<string, string> = {
+  bb_buildingEradicatedFloors:    'bb_buildingEradicated',
+  bb_buildingNotEradicatedFloors: 'bb_buildingNotEradicated',
+  bb_otherText:                   'bb_other',
+  smk_otherText:                  'smk_other',
+  spr_lastInspectDate:            'spr_hasSystem',
+};
+
+function isAnswerRequired(key: string, flags: LeaseFlags): boolean {
+  if (key.endsWith('SignDate')) return false;
+  if (OPTIONAL_ANSWER_KEYS.has(key)) return false;
+  const trigger = TRIGGER_REQUIRED[key];
+  if (trigger !== undefined) {
+    return (flags as unknown as Record<string, boolean>)[trigger] ?? false;
+  }
+  return true;
+}
+
 function computeWarnings(
   selectedIds: string[],
   answers: LeaseAnswers,
@@ -182,7 +203,7 @@ function computeWarnings(
     const seenGroups = new Set<string>();
 
     for (const q of rider.questions) {
-      if (q.kind === 'answer' && !q.key.endsWith('SignDate')) {
+      if (q.kind === 'answer' && isAnswerRequired(q.key, flags)) {
         const val = (answers as unknown as Record<string, string>)[q.key] ?? '';
         if (!val) issues.push(`"${q.label}" is blank`);
       }
@@ -349,7 +370,7 @@ function RiderQuestions({ rider, answers, flags, onFlagChange, onAnswerChange }:
         }
         if (q.kind === 'answer') {
           const value = (answers as unknown as Record<string, string>)[q.key] ?? '';
-          const isRequired = !q.key.endsWith('SignDate');
+          const isRequired = isAnswerRequired(q.key, flags);
           const isEmpty = !value;
           return (
             <div key={q.key}>
