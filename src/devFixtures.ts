@@ -63,6 +63,7 @@ export const TEST_ANSWERS: LeaseAnswers = {
   spr_lastInspectDate: '',
   knob_returnByDate: '',
   smk_otherText: '',
+  perTenantRiderTenants: '{}',
 };
 
 export const TEST_FLAGS: LeaseFlags = {

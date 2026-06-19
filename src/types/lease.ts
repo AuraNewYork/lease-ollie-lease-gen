@@ -62,6 +62,7 @@ export interface LeaseAnswers {
   spr_lastInspectDate: string;
   knob_returnByDate: string;
   smk_otherText: string;
+  perTenantRiderTenants: string;
 }
 
 export interface LeaseFlags {
@@ -184,6 +185,7 @@ export const DEFAULT_ANSWERS: LeaseAnswers = {
   spr_lastInspectDate: '',
   knob_returnByDate: '',
   smk_otherText: '',
+  perTenantRiderTenants: '{}',
 };
 
 export const DEFAULT_FLAGS: LeaseFlags = {

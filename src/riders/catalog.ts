@@ -9,6 +9,7 @@ export interface Rider {
   mandatory: boolean;
   templateKey: string;
   questions: RiderQuestion[];
+  perTenant?: boolean;
 }
 
 export const RIDER_CATALOG: Rider[] = [
@@ -17,6 +18,7 @@ export const RIDER_CATALOG: Rider[] = [
     label: 'Window Guard Notice (NYC)',
     language: 'EN',
     mandatory: true,
+    perTenant: true,
     templateKey: 'rbn-a1978-apbe-rider-tagged.docx',
     questions: [
       { kind: 'flag', key: 'wg_childPresent', label: 'A child 10 or younger lives in the apartment', exclusiveGroup: 'wg_children' },
@@ -35,6 +37,7 @@ export const RIDER_CATALOG: Rider[] = [
     label: 'Lead Poisoning & Window Falls Annual Notice (NYC)',
     language: 'EN',
     mandatory: true,
+    perTenant: true,
     templateKey: 'rbn-b1978-apbe-rider-tagged.docx',
     questions: [
       { kind: 'flag', key: 'wg_child5Present', label: 'A child 5 or younger lives/spends 10+ hrs/wk here (standalone)' },
@@ -85,6 +88,7 @@ export const RIDER_CATALOG: Rider[] = [
     label: 'Window Guard Notice (Spanish)',
     language: 'ES',
     mandatory: false,
+    perTenant: true,
     templateKey: 'rbn-a1978-apbs-rider-tagged.docx',
     questions: [],
   },
@@ -93,6 +97,7 @@ export const RIDER_CATALOG: Rider[] = [
     label: 'Lead & Window Annual Notice (Spanish)',
     language: 'ES',
     mandatory: false,
+    perTenant: true,
     templateKey: 'rbn-b1978-apbs-rider-tagged.docx',
     questions: [],
   },

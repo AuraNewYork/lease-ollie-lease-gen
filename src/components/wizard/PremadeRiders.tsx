@@ -36,6 +36,8 @@ export default function PremadeRiders() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const selectedIds: string[] = answers.selectedRiders.split(',').filter(Boolean);
+  const tenantNames = getTenantNames(answers);
+  const perTenantMap = parsePerTenantMap(answers.perTenantRiderTenants);
 
   function setSelectedRiders(ids: string[]) {
     setAnswers({ ...answers, selectedRiders: ids.join(',') });
@@ -71,9 +73,12 @@ export default function PremadeRiders() {
     setAnswers({ ...answers, [key]: value } as LeaseAnswers);
   }
 
-  // Compute soft warnings: selected riders with unanswered required fields.
-  const warnings = computeWarnings(selectedIds, answers, flags);
+  function handlePerTenantChange(riderId: string, indices: number[]) {
+    const updated = { ...perTenantMap, [riderId]: indices };
+    setAnswers({ ...answers, perTenantRiderTenants: JSON.stringify(updated) });
+  }
 
+  const warnings = computeWarnings(selectedIds, answers, flags);
   const enRiders = RIDER_CATALOG.filter((r) => r.language === 'EN');
   const esRiders = RIDER_CATALOG.filter((r) => r.language === 'ES');
 
@@ -115,6 +120,9 @@ export default function PremadeRiders() {
               flags={flags}
               onFlagChange={handleFlagChange}
               onAnswerChange={handleAnswerChange}
+              tenantNames={tenantNames}
+              perTenantMap={perTenantMap}
+              onPerTenantChange={handlePerTenantChange}
             />
           ))}
         </div>
@@ -134,6 +142,9 @@ export default function PremadeRiders() {
                 flags={flags}
                 onFlagChange={handleFlagChange}
                 onAnswerChange={handleAnswerChange}
+                tenantNames={tenantNames}
+                perTenantMap={perTenantMap}
+                onPerTenantChange={handlePerTenantChange}
               />
             ))}
           </div>
@@ -157,6 +168,9 @@ export default function PremadeRiders() {
                 flags={flags}
                 onFlagChange={handleFlagChange}
                 onAnswerChange={handleAnswerChange}
+                tenantNames={tenantNames}
+                perTenantMap={perTenantMap}
+                onPerTenantChange={handlePerTenantChange}
               />
             ))}
           </div>
@@ -166,7 +180,45 @@ export default function PremadeRiders() {
   );
 }
 
-// ─── Required-field warning computation ───────────────────────────────────────
+// ─── Tenant helpers ───────────────────────────────────────────────────────────
+
+function getTenantNames(answers: LeaseAnswers): string[] {
+  try {
+    const list: Array<{ first: string; middle: string; last: string }> = JSON.parse(
+      answers.tenantList || '[]',
+    );
+    if (list.length > 0) {
+      return list
+        .map((t) => [t.first, t.middle, t.last].filter(Boolean).join(' '))
+        .filter(Boolean);
+    }
+  } catch {}
+  return (answers.TenantName || '').split(',').map((s) => s.trim()).filter(Boolean);
+}
+
+function parsePerTenantMap(s: string): Record<string, number[]> {
+  try { return JSON.parse(s || '{}') as Record<string, number[]>; } catch { return {}; }
+}
+
+// ─── Group required / visibility helpers ─────────────────────────────────────
+
+// These groups are suppressed when bb_noHistory is true.
+const BB_NOHISTORY_GROUPS = new Set(['bb_building', 'bb_apt']);
+
+// These groups are never required (user may select none).
+const OPTIONAL_GROUPS = new Set(['knob_request']);
+
+function isGroupRequired(groupName: string, flags: LeaseFlags): boolean {
+  if (OPTIONAL_GROUPS.has(groupName)) return false;
+  if (BB_NOHISTORY_GROUPS.has(groupName)) return !flags.bb_noHistory;
+  return true;
+}
+
+function isGroupHidden(groupName: string, flags: LeaseFlags): boolean {
+  return BB_NOHISTORY_GROUPS.has(groupName) && flags.bb_noHistory;
+}
+
+// ─── Answer required helpers ──────────────────────────────────────────────────
 
 const OPTIONAL_ANSWER_KEYS = new Set(['wg_DeadlineDate', 'knob_returnByDate']);
 
@@ -189,6 +241,8 @@ function isAnswerRequired(key: string, flags: LeaseFlags): boolean {
   return true;
 }
 
+// ─── Warning computation ──────────────────────────────────────────────────────
+
 function computeWarnings(
   selectedIds: string[],
   answers: LeaseAnswers,
@@ -209,14 +263,16 @@ function computeWarnings(
       }
       if (q.kind === 'flag' && q.exclusiveGroup && !seenGroups.has(q.exclusiveGroup)) {
         seenGroups.add(q.exclusiveGroup);
-        const anyChosen = rider.questions.some(
-          (fq) =>
-            fq.kind === 'flag' &&
-            fq.exclusiveGroup === q.exclusiveGroup &&
-            ((flags as unknown as Record<string, boolean>)[fq.key] ?? false),
-        );
-        if (!anyChosen) {
-          issues.push(`choose one for "${q.exclusiveGroup.replace(/_/g, ' ')}"`);
+        if (isGroupRequired(q.exclusiveGroup, flags)) {
+          const anyChosen = rider.questions.some(
+            (fq) =>
+              fq.kind === 'flag' &&
+              fq.exclusiveGroup === q.exclusiveGroup &&
+              ((flags as unknown as Record<string, boolean>)[fq.key] ?? false),
+          );
+          if (!anyChosen) {
+            issues.push(`choose one for "${q.exclusiveGroup.replace(/_/g, ' ')}"`);
+          }
         }
       }
     }
@@ -239,12 +295,21 @@ interface RiderCardProps {
   flags: LeaseFlags;
   onFlagChange: (key: string, value: boolean, exclusiveGroup?: string, rider?: Rider) => void;
   onAnswerChange: (key: string, value: string) => void;
+  tenantNames: string[];
+  perTenantMap: Record<string, number[]>;
+  onPerTenantChange: (riderId: string, indices: number[]) => void;
 }
 
-function RiderCard({ rider, selected, onToggle, answers, flags, onFlagChange, onAnswerChange }: RiderCardProps) {
-  // Mandatory riders start expanded so required fields are immediately visible.
+function RiderCard({
+  rider, selected, onToggle, answers, flags,
+  onFlagChange, onAnswerChange,
+  tenantNames, perTenantMap, onPerTenantChange,
+}: RiderCardProps) {
   const [expanded, setExpanded] = useState(rider.mandatory);
   const hasQuestions = rider.questions.length > 0;
+  const showTenantSelector = !!rider.perTenant && selected && tenantNames.length > 1;
+  const allIndices = tenantNames.map((_, i) => i);
+  const selectedTenantIndices = perTenantMap[rider.id] ?? allIndices;
 
   return (
     <div className={`border rounded-lg transition-colors ${selected ? 'border-blue-200 bg-blue-50/50' : 'border-slate-200 bg-white'}`}>
@@ -286,6 +351,34 @@ function RiderCard({ rider, selected, onToggle, answers, flags, onFlagChange, on
           />
         </div>
       )}
+
+      {showTenantSelector && (
+        <div className="px-4 py-3 border-t border-slate-100">
+          <p className="text-xs font-medium text-slate-500 mb-2">Generate a copy for:</p>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            {tenantNames.map((name, i) => {
+              const checked = selectedTenantIndices.includes(i);
+              return (
+                <label key={i} className="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) => {
+                      const current = perTenantMap[rider.id] ?? allIndices;
+                      const next = e.target.checked
+                        ? [...new Set([...current, i])].sort((a, b) => a - b)
+                        : current.filter((idx) => idx !== i);
+                      onPerTenantChange(rider.id, next);
+                    }}
+                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-slate-700">{name}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -314,7 +407,6 @@ function RiderQuestions({ rider, answers, flags, onFlagChange, onAnswerChange }:
     }
   }
 
-  // A group is required (no option chosen yet) for the indicator.
   function groupHasNoSelection(groupQuestions: RiderQuestion[]): boolean {
     return !groupQuestions.some(
       (q) => q.kind === 'flag' && ((flags as unknown as Record<string, boolean>)[q.key] ?? false),
@@ -324,7 +416,9 @@ function RiderQuestions({ rider, answers, flags, onFlagChange, onAnswerChange }:
   return (
     <div className="space-y-4 mt-2">
       {Array.from(groups.entries()).map(([groupName, questions]) => {
-        const needsSelection = groupHasNoSelection(questions);
+        if (isGroupHidden(groupName, flags)) return null;
+        const groupRequired = isGroupRequired(groupName, flags);
+        const needsSelection = groupRequired && groupHasNoSelection(questions);
         return (
           <fieldset key={groupName} className="space-y-1.5">
             <legend className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
