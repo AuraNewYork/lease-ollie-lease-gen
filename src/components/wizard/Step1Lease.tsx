@@ -76,6 +76,36 @@ export default function Step1Lease() {
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-slate-900">Step 1: Lease & Property</h2>
 
+      {/* Template & Rider Set */}
+      <div className="space-y-1.5">
+        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Template & Rider Set</p>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => updateAnswer('templateSet', 'classic')}
+            className={`px-4 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+              (answers.templateSet || 'classic') === 'classic'
+                ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
+                : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+            }`}
+          >
+            Classic (current)
+          </button>
+          <button
+            type="button"
+            onClick={() => updateAnswer('templateSet', 'v2')}
+            className={`px-4 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+              answers.templateSet === 'v2'
+                ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
+                : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+            }`}
+          >
+            New (v2)
+          </button>
+        </div>
+        <p className="text-xs text-slate-500">New (v2) uses the rebuilt rider set. Classic is the current live set.</p>
+      </div>
+
       <PresetBar
         scope="lease"
         answerKeys={['LeaseCreationDate', 'LeaseStartDate', 'LeaseEndDate', 'BuildingName', 'Address', 'Apt#', 'AptFlr', 'UtilitiesIncluded']}

@@ -63,6 +63,7 @@ export interface LeaseAnswers {
   knob_returnByDate: string;
   smk_otherText: string;
   perTenantRiderTenants: string;
+  templateSet: string;
 }
 
 export interface LeaseFlags {
@@ -186,6 +187,7 @@ export const DEFAULT_ANSWERS: LeaseAnswers = {
   knob_returnByDate: '',
   smk_otherText: '',
   perTenantRiderTenants: '{}',
+  templateSet: 'classic',
 };
 
 export const DEFAULT_FLAGS: LeaseFlags = {

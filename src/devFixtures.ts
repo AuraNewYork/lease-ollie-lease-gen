@@ -64,6 +64,7 @@ export const TEST_ANSWERS: LeaseAnswers = {
   knob_returnByDate: '',
   smk_otherText: '',
   perTenantRiderTenants: '{}',
+  templateSet: 'classic',
 };
 
 export const TEST_FLAGS: LeaseFlags = {
