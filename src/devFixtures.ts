@@ -60,6 +60,9 @@ export const TEST_ANSWERS: LeaseAnswers = {
   tenantEmails: '["jane.doe@example.com","john.roe@example.com"]',
   GuarantorCount: '1',
   guarantors: '[{"GuarantorName":"Mary Guarantor","GuarantorAddress":"10 Guarantor Ln, New York, NY 10001","name":"Mary Guarantor","email":""}]',
+  spr_lastInspectDate: '',
+  knob_returnByDate: '',
+  smk_otherText: '',
 };
 
 export const TEST_FLAGS: LeaseFlags = {
@@ -94,4 +97,23 @@ export const TEST_FLAGS: LeaseFlags = {
   bb_aptEradicated: false,
   bb_aptNotEradicated: false,
   bb_other: false,
+  spr_hasSystem: true,
+  spr_noSystem: false,
+  knob_wantCovers: true,
+  knob_wantPermKnobs: false,
+  knob_childYes: false,
+  knob_childNo: true,
+  smk_insideUnits: true,
+  smk_outsideUnits: true,
+  smk_outdoorCommon: false,
+  smk_within15ft: false,
+  smk_other: false,
+  fld_femaFloodplain: false,
+  fld_sfha: false,
+  fld_moderate: false,
+  fld_floodDamage: false,
+  fl_knownPresent: false,
+  fl_noKnowledge: false,
+  fl_recordsProvided: false,
+  fl_noRecords: false,
 };

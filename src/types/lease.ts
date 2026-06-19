@@ -58,6 +58,10 @@ export interface LeaseAnswers {
   tenantEmails: string;
   GuarantorCount: string;
   guarantors: string;
+  // New rider answer keys
+  spr_lastInspectDate: string;
+  knob_returnByDate: string;
+  smk_otherText: string;
 }
 
 export interface LeaseFlags {
@@ -92,6 +96,30 @@ export interface LeaseFlags {
   bb_aptEradicated: boolean;
   bb_aptNotEradicated: boolean;
   bb_other: boolean;
+  // Sprinkler rider flags
+  spr_hasSystem: boolean;
+  spr_noSystem: boolean;
+  // Stove knob rider flags
+  knob_wantCovers: boolean;
+  knob_wantPermKnobs: boolean;
+  knob_childYes: boolean;
+  knob_childNo: boolean;
+  // Smoking rider flags
+  smk_insideUnits: boolean;
+  smk_outsideUnits: boolean;
+  smk_outdoorCommon: boolean;
+  smk_within15ft: boolean;
+  smk_other: boolean;
+  // Flood rider flags
+  fld_femaFloodplain: boolean;
+  fld_sfha: boolean;
+  fld_moderate: boolean;
+  fld_floodDamage: boolean;
+  // Federal lead rider flags
+  fl_knownPresent: boolean;
+  fl_noKnowledge: boolean;
+  fl_recordsProvided: boolean;
+  fl_noRecords: boolean;
 }
 
 export const DEFAULT_ANSWERS: LeaseAnswers = {
@@ -153,6 +181,9 @@ export const DEFAULT_ANSWERS: LeaseAnswers = {
   tenantEmails: '[]',
   GuarantorCount: '0',
   guarantors: '[]',
+  spr_lastInspectDate: '',
+  knob_returnByDate: '',
+  smk_otherText: '',
 };
 
 export const DEFAULT_FLAGS: LeaseFlags = {
@@ -186,4 +217,23 @@ export const DEFAULT_FLAGS: LeaseFlags = {
   bb_aptEradicated: false,
   bb_aptNotEradicated: false,
   bb_other: false,
+  spr_hasSystem: false,
+  spr_noSystem: false,
+  knob_wantCovers: false,
+  knob_wantPermKnobs: false,
+  knob_childYes: false,
+  knob_childNo: false,
+  smk_insideUnits: false,
+  smk_outsideUnits: false,
+  smk_outdoorCommon: false,
+  smk_within15ft: false,
+  smk_other: false,
+  fld_femaFloodplain: false,
+  fld_sfha: false,
+  fld_moderate: false,
+  fld_floodDamage: false,
+  fl_knownPresent: false,
+  fl_noKnowledge: false,
+  fl_recordsProvided: false,
+  fl_noRecords: false,
 };

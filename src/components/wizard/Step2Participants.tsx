@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWizard } from '@/context/WizardContext';
 import FormField from '@/components/ui/FormField';
+import PresetBar from '@/components/wizard/PresetBar';
 
 interface TenantEntry {
   first: string;
@@ -131,6 +132,19 @@ export default function Step2Participants() {
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-slate-900">Step 2: Participants & Payments</h2>
+
+      <PresetBar
+        scope="participants"
+        answerKeys={[
+          'OwnerName', 'OwnerEmail', 'OwnerAddress',
+          'TenantName', 'TenantEmail', 'TenantCurrentAddress', 'Occupants',
+          'TenantCount', 'TenantFirstName', 'TenantMiddleInitial', 'TenantLastName', 'TenantPhone',
+          'tenantList', 'tenantEmails',
+          'GuarantorCount', 'guarantors',
+          'RentAmount', 'SecurityDeposit', 'PaymentMethods', 'SDBank', 'SDBankAddress',
+        ]}
+        flagKeys={[]}
+      />
 
       {/* Owner */}
       <div className="space-y-4">

@@ -1,6 +1,7 @@
 import { useWizard } from '@/context/WizardContext';
 import FormField from '@/components/ui/FormField';
 import Toggle from '@/components/ui/Toggle';
+import PresetBar from '@/components/wizard/PresetBar';
 
 export default function Step3Clauses() {
   const { answers, updateAnswer, flags, toggleFlag } = useWizard();
@@ -9,6 +10,21 @@ export default function Step3Clauses() {
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-slate-900">Step 3: Optional Clauses</h2>
       <p className="text-sm text-slate-500">Toggle clauses on/off. Fill in details for active clauses.</p>
+
+      <PresetBar
+        scope="clauses"
+        answerKeys={[
+          'Furniture', 'OwnershipWork', 'ApprovedAlterations', 'SubMeteredUtilities',
+          'TTApplianceRepairCost', 'MinInsuranceNum', 'MinInsuranceTxt', 'MaxInsuranceNum', 'MaxInsuranceTxt',
+          'ExtensionYears', 'ExtensionRent', 'ExtensionStartDate', 'ExtensionEndDate',
+          'PetTypes', 'OwnersBroker', 'TenantsBroker',
+        ]}
+        flagKeys={[
+          'guarantyIncluded', 'furnitureIncluded', 'ownerWork', 'approvedAlterations', 'subMetered',
+          'applianceRepair', 'glInsurance', 'extension', 'petsAllowed', 'brokersRetained',
+          'hasOutdoorSpace', 'builtBefore1978', 'hasAlarm', 'bicyclesForbidden', 'memorandum',
+        ]}
+      />
 
       <div className="space-y-5">
         <div className="p-4 bg-slate-50 rounded-lg">

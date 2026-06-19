@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import type { CustomRider, LeaseRiderLink } from '@/types';
 import { Plus, Trash2, Link2, Unlink, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import PremadeRiders from './PremadeRiders';
+import PresetBar from '@/components/wizard/PresetBar';
 
 const AI_PROMPT = `You are drafting a custom lease rider that will be attached to a NYC residential lease (REBNY standard
 form). Output ONLY clean semantic HTML for the rider body — no <html>, <head>, or <body> wrapper, no
@@ -134,6 +135,29 @@ export default function Step4Riders() {
           Select premade NYC disclosure riders and fill in their details, then optionally attach custom riders.
         </p>
       </div>
+
+      <PresetBar
+        scope="riders"
+        answerKeys={[
+          'selectedRiders',
+          'wg_DeadlineDate', 'wg_SignDate', 'wg_NoticeDate',
+          'bb_buildingEradicatedFloors', 'bb_buildingNotEradicatedFloors', 'bb_otherText',
+          'bb_TenantSignDate', 'bb_OwnerSignDate',
+          'aller_SignDate', 'spr_lastInspectDate', 'knob_returnByDate', 'smk_otherText',
+        ]}
+        flagKeys={[
+          'wg_childPresent', 'wg_noChild', 'wg_guardsInstalledAll', 'wg_guardsNotInstalled',
+          'wg_guardsNeedRepair', 'wg_guardsNoRepair', 'wg_wantGuardsAnyway', 'wg_child5Present',
+          'wg_haveGuardsNeedRepair',
+          'bb_noHistory', 'bb_buildingEradicated', 'bb_buildingNotEradicated',
+          'bb_aptEradicated', 'bb_aptNotEradicated', 'bb_other',
+          'spr_hasSystem', 'spr_noSystem',
+          'knob_wantCovers', 'knob_wantPermKnobs', 'knob_childYes', 'knob_childNo',
+          'smk_insideUnits', 'smk_outsideUnits', 'smk_outdoorCommon', 'smk_within15ft', 'smk_other',
+          'fld_femaFloodplain', 'fld_sfha', 'fld_moderate', 'fld_floodDamage',
+          'fl_knownPresent', 'fl_noKnowledge', 'fl_recordsProvided', 'fl_noRecords',
+        ]}
+      />
 
       <PremadeRiders />
 

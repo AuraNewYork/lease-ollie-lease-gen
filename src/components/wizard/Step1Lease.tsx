@@ -3,6 +3,7 @@ import { useWizard } from '@/context/WizardContext';
 import { fetchBuildings, fetchUnitByBuilding } from '@/data/supabase/units';
 import type { BuildingConfig } from '@/types';
 import FormField from '@/components/ui/FormField';
+import PresetBar from '@/components/wizard/PresetBar';
 import { Search, Building2, PenLine } from 'lucide-react';
 
 export default function Step1Lease() {
@@ -74,6 +75,12 @@ export default function Step1Lease() {
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-slate-900">Step 1: Lease & Property</h2>
+
+      <PresetBar
+        scope="lease"
+        answerKeys={['LeaseCreationDate', 'LeaseStartDate', 'LeaseEndDate', 'BuildingName', 'Address', 'Apt#', 'AptFlr', 'UtilitiesIncluded']}
+        flagKeys={[]}
+      />
 
       <div className="grid grid-cols-2 gap-2">
         <button

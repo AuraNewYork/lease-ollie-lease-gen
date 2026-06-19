@@ -6,6 +6,7 @@ import Step2Participants from './Step2Participants';
 import Step3Clauses from './Step3Clauses';
 import Step4Riders from './Step4Riders';
 import Step5Finalize from './Step5Finalize';
+import PresetBar from './PresetBar';
 import { ChevronLeft, ChevronRight, Loader as Loader2, Save } from 'lucide-react';
 const STEP_LABELS = ['Lease & Property', 'Participants', 'Clauses', 'Riders', 'Generate'];
 
@@ -27,7 +28,7 @@ export default function WizardShell() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <nav className="mb-6">
+      <nav className="mb-4">
         <ol className="flex items-center gap-1">
           {STEP_LABELS.map((label, i) => {
             const stepNum = i + 1;
@@ -72,6 +73,11 @@ export default function WizardShell() {
           </button>
         </div>
       </nav>
+
+      {/* Full-document preset bar — persistent on every step */}
+      <div className="mb-3">
+        <PresetBar scope="full" answerKeys={[]} flagKeys={[]} />
+      </div>
 
       <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
         {step === 1 && <Step1Lease />}
