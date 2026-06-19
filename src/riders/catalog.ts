@@ -1,6 +1,6 @@
 export type RiderQuestion =
   | { kind: 'flag'; key: string; label: string; exclusiveGroup?: string }
-  | { kind: 'answer'; key: string; label: string; type: 'text' | 'date' };
+  | { kind: 'answer'; key: string; label: string; type: 'text' | 'date'; prefill?: 'creationDate' };
 
 export interface Rider {
   id: string;
@@ -45,7 +45,7 @@ export const RIDER_CATALOG: Rider[] = [
       { kind: 'flag', key: 'wg_guardsNeedRepair', label: 'Guards need repair (with-children branch)' },
       { kind: 'flag', key: 'wg_wantGuardsAnyway', label: 'Want guards anyway (no-children branch)' },
       { kind: 'flag', key: 'wg_haveGuardsNeedRepair', label: 'Have guards but need repair (no-children branch)' },
-      { kind: 'answer', key: 'wg_NoticeDate', label: 'Notice issue date', type: 'date' },
+      { kind: 'answer', key: 'wg_NoticeDate', label: 'Notice issue date', type: 'date', prefill: 'creationDate' },
       { kind: 'answer', key: 'wg_DeadlineDate', label: 'Return deadline', type: 'date' },
       { kind: 'answer', key: 'wg_SignDate', label: 'Tenant sign date (stub)', type: 'date' },
       { kind: 'answer', key: 'TenantFirstName', label: 'Tenant first name', type: 'text' },
